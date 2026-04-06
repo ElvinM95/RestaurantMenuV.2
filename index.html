@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qurman | Restoran Menyu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <nav class="navbar container">
+            <a href="#" class="logo">
+                <img src="Images/Logo/IMG-20260406-WA0004.jpg" alt="Logo" class="site-logo">
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Əsas Səhifə</a></li>
+                <li><a href="#menu">Menyu</a></li>
+                <li><a href="#about">Haqqımızda</a></li>
+                <li><a href="#contact">Əlaqə</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Ləzzətin Əsl Ünvanı</h1>
+                <p>Nəfis təamlar, gözəl ab-hava və unudulmaz təcrübə. Damaq dadınıza uyğun yeməkləri kəşf edin.</p>
+                <a href="#menu" class="btn">Menyuya Baxın</a>
+            </div>
+        </section>
+
+        <section id="menu" class="menu-section container">
+            <div class="section-title">
+                <h2>Menyumuz</h2>
+                <p>Ən təzə inqrediyentlərlə hazırlanan yeməklərimizdən zövq alın</p>
+            </div>
+            
+            <div class="filters" id="filters">
+                <!-- Filters will be generated dynamically via JS -->
+            </div>
+
+            <div class="menu-grid" id="menu-grid">
+                <!-- Menu items will be generated dynamically via JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer id="about">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <a href="#" class="logo" style="margin-bottom: 1.5rem;">
+                    <img src="Images/Logo/IMG-20260406-WA0004.jpg" alt="Logo" class="site-logo">
+                </a>
+                <p>Ən yüksək keyfiyyətli xidmət və müasir dadların harmoniyası. Hər yemək xüsusi hazırlanır.</p>
+            </div>
+            <div class="footer-col" id="contact">
+                <h3>Əlaqə</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Bakı şəh., Nizami küç. 10</p>
+                <p><i class="fas fa-phone"></i> +994 50 123 45 67</p>
+                <p><i class="fas fa-envelope"></i> info@qurman.az</p>
+            </div>
+            <div class="footer-col">
+                <h3>İş Saatları</h3>
+                <p>Bazar ertəsi - Cümə: 10:00 - 23:00</p>
+                <p>Şənbə - Bazar: 09:00 - 00:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Qurman Restoranı. Bütün hüquqlar qorunur.</p>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="food-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-body">
+                <img id="modal-img" src="" alt="Yemək şəkli">
+                <div class="modal-info">
+                    <h2 id="modal-title"></h2>
+                    <span id="modal-category" class="category-tag"></span>
+                    <h3 id="modal-price" class="modal-price"></h3>
+                    <p id="modal-desc"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qurman | İdarəetmə Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div id="auth-container" class="auth-container">
+        <div class="auth-box">
+            <h2>İdarəetmə Panelinə Giriş</h2>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="E-poçt ünvanı" required>
+                <input type="password" id="password" placeholder="Şifrə" required>
+                <button type="submit" class="btn">Daxil Ol</button>
+            </form>
+            <p id="auth-error" class="error-msg"></p>
+        </div>
+    </div>
+
+    <div id="admin-container" class="admin-container hidden">
+        <header class="admin-header">
+            <div class="logo">Qurman <span>Admin</span></div>
+            <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıxış et</button>
+        </header>
+
+        <main class="admin-main">
+            <section class="form-section">
+                <h3>Yeni Yemək Əlavə Et</h3>
+                <form id="add-item-form">
+                    <div class="form-group">
+                        <label>Yeməyin Adı</label>
+                        <input type="text" id="item-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kateqoriya</label>
+                        <select id="item-category" required>
+                            <option value="Əsas">Əsas</option>
+                            <option value="Şorba">Şorba</option>
+                            <option value="Qəlyanaltı">Qəlyanaltı</option>
+                            <option value="Şirniyyat">Şirniyyat</option>
+                            <option value="İçki">İçki</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Qiymət (₼)</label>
+                        <input type="text" id="item-price" placeholder="Məs: 12.00 ₼" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Təsvir</label>
+                        <textarea id="item-desc" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Şəkil Yüklə</label>
+                        <input type="file" id="item-img" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn submit-btn" id="submit-btn">Əlavə Et</button>
+                    <p id="form-msg" class="form-msg"></p>
+                </form>
+            </section>
+
+            <section class="list-section">
+                <h3>Mövcud Menyu</h3>
+                <div class="table-container">
+                    <table id="menu-table">
+                        <thead>
+                            <tr>
+                                <th>Şəkil</th>
+                                <th>Ad</th>
+                                <th>Kateqoriya</th>
+                                <th>Qiymət</th>
+                                <th>Əməliyyat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menu-table-body">
+                            <!-- Items will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase Admin Script -->
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
