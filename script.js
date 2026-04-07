@@ -119,7 +119,7 @@ function displayMenuItems(filter = "Bütün") {
 
     menuGrid.innerHTML = filteredMenu.map(item => {
         return `
-            <div class="menu-card" onclick="openModal(${item.id})" style="cursor: pointer;">
+            <div class="menu-card" onclick="openModal('${item.id}')" style="cursor: pointer;">
                 <div class="price-tag">${item.price}</div>
                 <div class="card-img">
                     <img src="${item.img}" alt="${item.name}" loading="lazy">
@@ -197,7 +197,7 @@ const modal = document.getElementById('food-modal');
 const closeBtn = document.querySelector('.close-btn');
 
 window.openModal = function(id) {
-    const item = menuData.find(m => m.id === id);
+    const item = menuData.find(m => m.id.toString() === id.toString());
     if (!item) return;
 
     document.getElementById('modal-img').src = item.img;
