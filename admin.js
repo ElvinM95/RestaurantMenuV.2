@@ -1,14 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
-import { firebaseConfig } from "./firebase-config.js";
+import { firebaseConfig, cloudinaryConfig } from "./firebase-config.js";
 
-// Initialize Firebase
+// Initialize Firebase (Yalnız Auth + Firestore — Storage artıq istifadə olunmur)
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // DOM Elements
 const authContainer = document.getElementById("auth-container");
@@ -24,15 +22,64 @@ const submitBtn = document.getElementById("submit-btn");
 
 let editingId = null; // Track if we are editing
 
+// ============================================================
+// Cloudinary-yə Şəkil Yükləmə Funksiyası (Unsigned Upload)
+// ============================================================
+async function uploadToCloudinary(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", cloudinaryConfig.uploadPreset);
+    formData.append("folder", "restoran_menyu"); // Bütün şəkillər bu qovluqda saxlanılır
+
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+        { method: "POST", body: formData }
+    );
+
+    if (!response.ok) {
+        throw new Error("Cloudinary yükləmə xətası: " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    // Avtomatik optimizasiya: q_auto (keyfiyyət), f_auto (format — WebP/AVIF)
+    // Bu, şəkli ən kiçik ölçüdə və ən sürətli formatda göstərir
+    const optimizedUrl = data.secure_url.replace(
+        "/upload/",
+        "/upload/q_auto,f_auto/"
+    );
+
+    return optimizedUrl;
+}
+
+// ============================================================
+// Brauzerdə Şəkil Sıxma (browser-image-compression)
+// ============================================================
+async function compressImage(file) {
+    const options = {
+        maxSizeMB: 0.2,           // Maksimum 200 KB
+        maxWidthOrHeight: 1200,   // Şəkil eni/hündürlüyü 1200px-dən böyük olmasın
+        useWebWorker: true,       // Arxa planda sıxır (UI donmur)
+        fileType: "image/jpeg"    // JPEG formatına çevirir (daha kiçik ölçü)
+    };
+
+    try {
+        const compressedFile = await imageCompression(file, options);
+        console.log(`Şəkil sıxıldı: ${(file.size / 1024).toFixed(0)}KB → ${(compressedFile.size / 1024).toFixed(0)}KB`);
+        return compressedFile;
+    } catch (error) {
+        console.warn("Şəkil sıxma xətası, orijinal istifadə olunur:", error);
+        return file; // Sıxma uğursuz olsa, orijinal faylı istifadə et
+    }
+}
+
 // Auth State Observer
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User is logged in
         authContainer.classList.add("hidden");
         adminContainer.classList.remove("hidden");
         loadMenuItems();
     } else {
-        // User is logged out
         authContainer.classList.remove("hidden");
         adminContainer.classList.add("hidden");
     }
@@ -109,7 +156,6 @@ window.editItem = (id, name, category, price, desc, img) => {
     document.getElementById("item-category").value = category;
     document.getElementById("item-price").value = price;
     document.getElementById("item-desc").value = desc;
-    // We cannot set value of file input, but we know it's not required to re-upload image if editing
     document.getElementById("item-img").required = false; 
     
     submitBtn.innerText = "Yenilə";
@@ -133,19 +179,24 @@ addItemForm.addEventListener("submit", async (e) => {
         
         let imageUrl = "";
 
-        // If a new file is uploaded
+        // Əgər yeni şəkil seçilibsə: sıx → Cloudinary-yə yüklə
         if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const storageRef = ref(storage, "images/" + Date.now() + "_" + file.name);
-            const snapshot = await uploadBytes(storageRef, file);
-            imageUrl = await getDownloadURL(snapshot.ref);
+            const originalFile = fileInput.files[0];
+
+            // 1. Brauzerdə sıx (200KB-a qədər)
+            formMsg.innerText = "Şəkil sıxılır...";
+            const compressedFile = await compressImage(originalFile);
+
+            // 2. Cloudinary-yə yüklə
+            formMsg.innerText = "Şəkil yüklənir...";
+            imageUrl = await uploadToCloudinary(compressedFile);
         }
 
         if (editingId) {
             // Update Existing Item
             const updateData = { name, category, price, desc };
             if (imageUrl) {
-                updateData.img = imageUrl; // Only update image if new one was selected
+                updateData.img = imageUrl;
             }
             await updateDoc(doc(db, "menuItems", editingId), updateData);
             formMsg.innerText = "Yemək uğurla yeniləndi!";
